@@ -2,7 +2,7 @@
 
 ScopeDesk is a local-first workspace for organizing authorized bug bounty research. It helps a researcher record a program's scope, inspect sanitized technical artifacts, track AI-generated hypotheses, and prepare a report that a person has manually verified.
 
-The existing Windows app is the full research workspace. A small browser-only scope-change demo is being added for the Kiroween entry; it will compare two policy versions without sending their text to a server.
+The Windows app is the full research workspace. The companion browser demo under `docs/` compares two policy versions, shows exact added and removed lines, highlights scope-related candidates, and exports a manual review record. It processes pasted text in the browser only.
 
 ## What it does
 
@@ -19,7 +19,7 @@ ScopeDesk does not scan targets, enumerate paths, test credentials, exploit vuln
 
 The local database and evidence files are not encrypted. Keep `data/`, API keys, `.streamlit/secrets.toml`, and private artifacts out of GitHub. The optional AI call sends the selected project summary and imported metadata to the endpoint configured by the user.
 
-The companion browser demo is designed to compare only text entered by the user. It must not fetch target pages or transmit pasted policy text.
+The companion browser demo compares only text entered by the user. It does not fetch target pages or transmit pasted policy text.
 
 ## Run the local app on Windows
 
@@ -42,7 +42,7 @@ $env:AI_BUG_BOUNTY_DATA_DIR = 'F:\BugBountyData'
 
 ## Demo
 
-The Kiroween release will include a public static demo under `docs/`. The demo will use fictional `.test` hostnames, keep data in the browser, and provide a Markdown review export.
+The browser-only demo lives under `docs/`. It uses fictional `.test` hostnames, compares line occurrences, highlights exact source excerpts, supports manual review, and exports a Markdown record. It makes no network requests and does not save pasted policy text. [Open the public demo](https://tttwww78.github.io/ai-bug-bounty-research-desk/).
 
 ## Repository and license
 
