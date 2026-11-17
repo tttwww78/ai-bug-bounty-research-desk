@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'none'; img-src 'self' data:; object-src 'none'; base-uri 'none'">
+    <meta name="description" content="Compare two versions of bug bounty program rules and review exact scope changes locally.">
+    <title>ScopeDesk — Policy Change Review</title>
+    <link rel="stylesheet" href="./demo.css">
+    <script src="./demo.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <div class="page-shell">
+      <header class="site-header">
+        <div class="brand-row">
+          <div class="brand-mark" aria-hidden="true">SD</div>
+          <div class="brand-copy">
+            <p class="eyebrow">ScopeDesk / Safety Tools</p>
+            <h1>Policy Change Review</h1>
+          </div>
+          <span class="local-badge"><span class="status-dot" aria-hidden="true"></span>Local only</span>
+        </div>
+        <p class="lede">Compare old and current program rules before you update a scope record.</p>
+        <div class="safety-note" role="note">
+          <strong>Text comparison only.</strong> This demo does not fetch program pages, test targets, or verify authorization. Always review the official rules yourself.
+        </div>
+      </header>
+
+      <main id="main">
+        <section class="workspace" aria-labelledby="compare-heading">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Revision comparison</p>
+              <h2 id="compare-heading">Rule text</h2>
+            </div>
+            <div class="toolbar" aria-label="Sample and reset actions">
+              <button class="button button-secondary" id="load-sample" type="button">Load fictional sample</button>
+              <button class="button button-quiet" id="clear-all" type="button">Clear</button>
+            </div>
+          </div>
+
+          <div class="inputs-grid">
+            <div class="input-panel">
+              <div class="input-heading">
+                <label for="previous-rules">Previous version</label>
+                <span class="version-tag version-old">OLD</span>
+              </div>
+              <p class="field-hint" id="previous-hint">Paste the earlier policy text. Use the source wording exactly.</p>
+              <textarea id="previous-rules" maxlength="20000" aria-describedby="previous-hint" spellcheck="false" placeholder="Paste the previous program rules here…"></textarea>
+              <div class="field-foot"><span>Plain text or Markdown</span><span id="previous-count">0 / 20,000</span></div>
+            </div>
+
+            <div class="input-panel">
+              <div class="input-heading">
+                <label for="current-rules">Current version</label>
+                <span class="version-tag version-new">CURRENT</span>
+              </div>
+              <p class="field-hint" id="current-hint">Paste the current policy text. Check the program page for the latest version.</p>
+              <textarea id="current-rules" maxlength="20000" aria-describedby="current-hint" spellcheck="false" placeholder="Paste the current program rules here…"></textarea>
+              <div class="field-foot"><span>Plain text or Markdown</span><span id="current-count">0 / 20,000</span></div>
+            </div>
+          </div>
+
+          <div class="actions-row">
+            <p class="inline-note">Pasted text stays in this browser tab and is not saved.</p>
+            <button class="button button-primary" id="compare-rules" type="button">Compare versions</button>
+          </div>
+          <p class="form-message" id="compare-message" role="alert" hidden></p>
+        </section>
+
+        <section class="results-section" id="results-section" aria-labelledby="results-heading" hidden>
+          <div class="results-heading-row">
+            <div>
+              <p class="eyebrow">Review the evidence</p>
+              <h2 id="results-heading">Changes found</h2>
+              <p class="field-hint">Each item below quotes the original source line. Extracted terms are candidates, not conclusions.</p>
+            </div>
+            <button class="button button-secondary" id="export-review" type="button" disabled>Export Markdown</button>
+          </div>
+
+          <div class="summary-grid" id="summary-grid" aria-live="polite"></div>
+          <div class="results-layout">
+            <div class="change-panel">
+              <div class="panel-heading">
+                <h3>Line changes</h3>
+                <div class="filter-row" role="group" aria-label="Filter line changes">
+                  <button class="filter-button is-active" data-filter="all" type="button" aria-pressed="true">All</button>
+                  <button class="filter-button" data-filter="added" type="button" aria-pressed="false">Added</button>
+                  <button class="filter-button" data-filter="removed" type="button" aria-pressed="false">Removed</button>
+                </div>
+              </div>
+              <ol class="change-list" id="change-list"></ol>
+              <p class="empty-result" id="no-changes" hidden>No line changes found. Confirm both versions are correct.</p>
+            </div>
+            <aside class="candidate-panel" aria-labelledby="candidate-heading">
+              <div class="panel-heading">
+                <div>
+                  <p class="eyebrow">Exact source matches</p>
+                  <h3 id="candidate-heading">Scope candidates</h3>
+                </div>
+              </div>
+              <p class="candidate-intro">These are keyword and pattern matches from changed lines. Verify each one against the official policy.</p>
+              <ul class="candidate-list" id="candidate-list"></ul>
+              <p class="empty-result" id="no-candidates" hidden>No scope-like terms matched the current keyword patterns.</p>
+            </aside>
+          </div>
+        </section>
+      </main>
+
+      <footer class="site-footer">
+        <span>ScopeDesk • Local text processing • No target requests</span>
+        <a href="https://kiroween.devpost.com/" rel="noreferrer">Kiroween 2026</a>
+      </footer>
+    </div>
+  </body>
+</html>
