@@ -87,12 +87,13 @@ textarea::placeholder { color: #8a969b; }
 .results-section[hidden] { display: none; }
 .results-heading-row { align-items: center; margin-bottom: 1rem; }
 .results-heading-row .field-hint { margin-bottom: 0; }
-.summary-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.7rem; margin-bottom: 1rem; }
+.summary-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.7rem; margin-bottom: 1rem; }
 .summary-item { border: 1px solid var(--line); border-radius: 0.4rem; padding: 0.8rem; background: #fbfcfb; }
 .summary-item strong { display: block; font-size: 1.35rem; line-height: 1.1; }
 .summary-item span { display: block; margin-top: 0.3rem; color: var(--muted); font-size: 0.78rem; }
 .summary-item.added strong { color: var(--green); }
 .summary-item.removed strong { color: var(--red); }
+.summary-item.unchanged strong { color: var(--teal-dark); }
 .summary-item.review strong { color: var(--amber); }
 .results-layout { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(260px, 0.8fr); gap: 1rem; align-items: start; }
 .change-panel, .candidate-panel { min-width: 0; border: 1px solid var(--line); border-radius: 0.4rem; background: #fff; }
@@ -106,6 +107,10 @@ textarea::placeholder { color: #8a969b; }
 .change-kind { border-radius: 0.25rem; padding: 0.14rem 0.42rem; font-size: 0.68rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; }
 .change-kind.added { background: var(--green-pale); color: var(--green); }
 .change-kind.removed { background: var(--red-pale); color: var(--red); }
+.change-kind.unchanged { background: var(--teal-pale); color: var(--teal-dark); }
+.change-row-unchanged .source-line { border-left: 2px solid var(--teal); background: #f0f7f6; }
+.unchanged-evidence { display: grid; gap: 0.55rem; }
+.unchanged-source { display: grid; gap: 0.2rem; }
 .line-ref { color: var(--muted); font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.75rem; }
 .source-line { display: block; overflow-wrap: anywhere; border-left: 2px solid var(--line-strong); padding: 0.45rem 0.6rem; background: #f6f8f8; color: var(--ink); font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.82rem; white-space: pre-wrap; }
 .review-control { display: inline-flex; align-items: center; gap: 0.45rem; margin-top: 0.6rem; color: var(--muted); font-size: 0.78rem; cursor: pointer; }
@@ -137,5 +142,7 @@ textarea::placeholder { color: #8a969b; }
   .actions-row { align-items: stretch; flex-direction: column; }
   .actions-row .button { width: 100%; }
   .summary-grid { grid-template-columns: 1fr; }
+  .filter-row { flex-wrap: wrap; }
+  .filter-button { flex: 1 1 calc(50% - 0.55rem); }
   .site-footer { flex-direction: column; }
 }

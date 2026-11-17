@@ -15,12 +15,18 @@ Help a researcher compare two user-provided versions of a bug bounty program's r
 
 - The comparison is deterministic and runs entirely in the browser.
 - Added and removed lines preserve their source line numbers and exact text.
+- Unchanged lines preserve the exact text from both versions and carry both source line numbers, with deterministic duplicate handling.
 - Extracted terms are labeled as candidates; the UI does not claim they are authoritative or prove authorization.
 - Every review checkbox has an accessible label and its state appears in the exported Markdown.
+- An accessible filter for All, Added, Removed, and Unchanged is provided.
+- The unchanged count appears in the summary grid.
+- Unchanged rows display both source line references but do not show a review checkbox.
+- Export places unchanged lines in a separate section without a review label.
 - The sample uses reserved `.test` hostnames and does not point at a real target.
 - Export creates a Markdown file locally in the browser.
 - A clear empty state, input-size error, and no-change result are provided.
 - The demo makes no network requests and does not persist user-pasted rules.
+- Candidate extraction remains limited to changed lines only.
 
 ## Non-goals
 

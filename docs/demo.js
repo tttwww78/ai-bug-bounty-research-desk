@@ -62,16 +62,26 @@ Not allowed: brute force, denial of service, or testing real user accounts`;
 
     oldLines.forEach((line) => {
       const bucket = oldBuckets.get(line.key) || [];
-      bucket.push({ ...line, matched: false });
+      bucket.push({ ...line, matched: false, prevIndex: bucket.length });
       oldBuckets.set(line.key, bucket);
     });
 
+    const unchanged = [];
     const added = [];
     currentLines.forEach((line, index) => {
       const bucket = oldBuckets.get(line.key);
       const match = bucket?.find((candidate) => !candidate.matched);
       if (match) {
         match.matched = true;
+        unchanged.push({
+          kind: "unchanged",
+          id: `unchanged-${match.number}-${line.number}`,
+          number: match.number,
+          currentNumber: line.number,
+          previousRaw: match.raw,
+          raw: line.raw,
+          version: "both"
+        });
         return;
       }
       added.push({ ...line, kind: "added", id: `added-${line.number}-${index}` });
@@ -84,7 +94,7 @@ Not allowed: brute force, denial of service, or testing real user accounts`;
       });
     });
 
-    return [...added, ...removed];
+    return [...unchanged, ...added, ...removed];
   }
 
   function extractCandidates(changes) {
@@ -136,11 +146,14 @@ Not allowed: brute force, denial of service, or testing real user accounts`;
     summary.replaceChildren();
     const addedCount = state.changes.filter((change) => change.kind === "added").length;
     const removedCount = state.changes.filter((change) => change.kind === "removed").length;
-    const reviewedCount = state.changes.filter((change) => state.reviewed.has(change.id)).length;
+    const unchangedCount = state.changes.filter((change) => change.kind === "unchanged").length;
+    const reviewableCount = addedCount + removedCount;
+    const reviewedCount = state.changes.filter((change) => change.kind !== "unchanged" && state.reviewed.has(change.id)).length;
     const items = [
       { className: "added", value: addedCount, label: "Added lines" },
       { className: "removed", value: removedCount, label: "Removed lines" },
-      { className: "review", value: `${reviewedCount} / ${state.changes.length}`, label: "Changes reviewed" }
+      { className: "unchanged", value: unchangedCount, label: "Unchanged lines" },
+      { className: "review", value: `${reviewedCount} / ${reviewableCount}`, label: "Changes reviewed" }
     ];
     items.forEach((item) => {
       const card = makeElement("div", `summary-item ${item.className}`);
@@ -156,25 +169,42 @@ Not allowed: brute force, denial of service, or testing real user accounts`;
     noChanges.hidden = visible.length > 0;
 
     visible.forEach((change) => {
-      const item = makeElement("li", "change-row");
+      const item = makeElement("li", `change-row change-row-${change.kind}`);
       const meta = makeElement("div", "change-meta");
       const badge = makeElement("span", `change-kind ${change.kind}`, change.kind);
-      const version = change.version === "current" ? "Current version" : "Previous version";
-      const lineRef = makeElement("span", "line-ref", `${version}, line ${change.number}`);
-      meta.append(badge, lineRef);
-      const quote = makeElement("code", "source-line", change.raw);
-      const label = makeElement("label", "review-control");
-      const checkbox = document.createElement("input");
-      checkbox.type = "checkbox";
-      checkbox.checked = state.reviewed.has(change.id);
-      checkbox.setAttribute("aria-label", `Mark ${change.kind} line ${change.number} as reviewed`);
-      checkbox.addEventListener("change", () => {
-        if (checkbox.checked) state.reviewed.add(change.id);
-        else state.reviewed.delete(change.id);
-        renderSummary();
-      });
-      label.append(checkbox, makeElement("span", "", "I reviewed this source line"));
-      item.append(meta, quote, label);
+      if (change.kind === "unchanged") {
+        meta.append(badge);
+        const evidence = makeElement("div", "unchanged-evidence");
+        [
+          { label: "Previous version", number: change.number, raw: change.previousRaw },
+          { label: "Current version", number: change.currentNumber, raw: change.raw }
+        ].forEach((source) => {
+          const block = makeElement("div", "unchanged-source");
+          block.append(
+            makeElement("span", "line-ref", `${source.label}, line ${source.number}`),
+            makeElement("code", "source-line", source.raw)
+          );
+          evidence.append(block);
+        });
+        item.append(meta, evidence);
+      } else {
+        const version = change.version === "current" ? "Current version" : "Previous version";
+        const lineRef = makeElement("span", "line-ref", `${version}, line ${change.number}`);
+        const quote = makeElement("code", "source-line", change.raw);
+        meta.append(badge, lineRef);
+        const label = makeElement("label", "review-control");
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.checked = state.reviewed.has(change.id);
+        checkbox.setAttribute("aria-label", `Mark ${change.kind} line ${change.number} as reviewed`);
+        checkbox.addEventListener("change", () => {
+          if (checkbox.checked) state.reviewed.add(change.id);
+          else state.reviewed.delete(change.id);
+          renderSummary();
+        });
+        label.append(checkbox, makeElement("span", "", "I reviewed this source line"));
+        item.append(meta, quote, label);
+      }
       changeList.append(item);
     });
   }
@@ -204,7 +234,7 @@ Not allowed: brute force, denial of service, or testing real user accounts`;
       return;
     }
     state.changes = compareLines(oldInput.value, currentInput.value);
-    state.candidates = extractCandidates(state.changes);
+    state.candidates = extractCandidates(state.changes.filter((c) => c.kind !== "unchanged"));
     state.reviewed.clear();
     state.filter = "all";
     document.querySelectorAll(".filter-button").forEach((button) => {
@@ -224,6 +254,8 @@ Not allowed: brute force, denial of service, or testing real user accounts`;
   }
 
   function exportReview() {
+    const changes = state.changes.filter((change) => change.kind !== "unchanged");
+    const unchanged = state.changes.filter((change) => change.kind === "unchanged");
     const lines = [
       "# Scope Change Review",
       "",
@@ -233,12 +265,19 @@ Not allowed: brute force, denial of service, or testing real user accounts`;
       "",
       "## Changes"
     ];
-    if (state.changes.length === 0) lines.push("No line changes found.");
-    state.changes.forEach((change) => {
+    if (changes.length === 0) lines.push("No line changes found.");
+    changes.forEach((change) => {
       const reviewed = state.reviewed.has(change.id) ? "Reviewed" : "Needs review";
       const version = change.version === "current" ? "Current" : "Previous";
       lines.push(`- **${change.kind.toUpperCase()} — ${reviewed}** (${version}, line ${change.number})`);
       lines.push(`  > ${escapeMarkdown(change.raw)}`);
+    });
+    lines.push("", "## Unchanged lines", "");
+    if (unchanged.length === 0) lines.push("No unchanged lines.");
+    unchanged.forEach((change) => {
+      lines.push(`- **Unchanged** (Previous version, line ${change.number}; Current version, line ${change.currentNumber})`);
+      lines.push(`  - Previous: ${escapeMarkdown(change.previousRaw)}`);
+      lines.push(`  - Current: ${escapeMarkdown(change.raw)}`);
     });
     lines.push("", "## Candidate terms", "");
     if (state.candidates.length === 0) lines.push("No terms matched the current keyword patterns.");

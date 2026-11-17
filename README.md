@@ -42,7 +42,7 @@ $env:AI_BUG_BOUNTY_DATA_DIR = 'F:\BugBountyData'
 
 ## Demo
 
-The browser-only demo lives under `docs/`. It uses fictional `.test` hostnames, compares line occurrences, highlights exact source excerpts, supports manual review, and exports a Markdown record. It makes no network requests and does not save pasted policy text. [Open the public demo](https://tttwww78.github.io/ai-bug-bounty-research-desk/).
+The browser-only demo lives under `docs/`. It uses fictional `.test` hostnames, compares added, removed, and unchanged line occurrences, highlights exact source excerpts, supports manual review, and exports a Markdown record. It makes no network requests and does not save pasted policy text. [Open the public demo](https://tttwww78.github.io/ai-bug-bounty-research-desk/).
 
 ## Repository and license
 
