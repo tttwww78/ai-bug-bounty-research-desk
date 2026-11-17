@@ -1,0 +1,15 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "Review public demo safety",
+      "description": "Remind Kiro to check the local-only and exact-evidence requirements after public demo files change.",
+      "trigger": "PostFileSave",
+      "matcher": "docs/.*\\.(html|js|css)$",
+      "action": {
+        "type": "agent",
+        "prompt": "Review the changed public demo file against .kiro/specs/scope-change-review/requirements.md. Check that pasted rule text stays local, is rendered as text rather than HTML, every extracted candidate has exact source-line evidence, and no target requests or external dependencies were added. Report issues; do not make unrelated edits."
+      }
+    }
+  ]
+}
